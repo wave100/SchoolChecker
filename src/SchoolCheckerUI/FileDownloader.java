@@ -14,7 +14,6 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 /**
@@ -26,7 +25,7 @@ public class FileDownloader {
     static ReadableByteChannel RBC;
     static FileOutputStream out;
     
-    public static void downloadFile(String localPath, URL fileURL) throws FileNotFoundException, IOException {
+    public static void downloadFile(String localPath, URL fileURL) throws FileNotFoundException, IOException { //Downloads a file. Pretty self-explanatory.
         RBC = Channels.newChannel(fileURL.openStream());
         File f = new File(localPath);
         f.mkdirs();

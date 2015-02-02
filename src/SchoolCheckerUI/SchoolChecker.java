@@ -23,15 +23,15 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
      * Creates new form SchoolCheckerUI
      */
     @Override
-    public void run() {
+    public void run() { //Auto-refresh thread.
         while (true) {
             try {
-                String s = Checker.check(town, URL);
-                lblStatus.setText(s);
-                if (s.equalsIgnoreCase("closed")) {
+                String st = Checker.check(town, URL);
+                lblStatus.setText(st);
+                if (st.equalsIgnoreCase("closed")) {
                     this.requestFocus();
                 }
-                System.out.println("Fetching new data");
+                // System.out.println("Fetching new data");
             } catch (IOException ex) {
                 Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -45,11 +45,11 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
 
     public SchoolChecker() {
         initComponents();
-        this.setTitle("School Closings");
+        this.setTitle("School Closings"); //Initialize window things.
         this.setResizable(false);
 
-        if (!s.isFirstRun) {
-            System.out.println("Setting program values from config");
+        if (!s.isFirstRun) { //If first run NOT detected, load old values and set program values accordingly.
+            // System.out.println("Setting program values from config");
 
             fieldCheckingURL.setText(s.getConfigURL());
             updateURL();
@@ -61,7 +61,7 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
         if (fieldCheckingURL.getText().isEmpty()) {
             fieldTownName.setText("Town");
             fieldTownName.setEnabled(false);
-            System.out.println("Graying out town field");
+            // System.out.println("Graying out town field");
         }
 
     }
@@ -188,32 +188,29 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSetTownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetTownActionPerformed
-        updateTown();
+        updateTown(); //This is what happens when "Set Town" is clicked.
     }//GEN-LAST:event_btnSetTownActionPerformed
 
-    private void updateTown() {
+    private void updateTown() { //Updates town, starts auto-update thread, and writes new town to config.
         try {
             town = fieldTownName.getText();
             s.setConfigTown(fieldTownName.getText());
             s.writeConfig();
             lblStatus.setText(Checker.check(town, URL));
-            Thread t = new Thread(this); //Stop other threads?
+            Thread t = new Thread(this);
             t.start();
-
         } catch (IOException ex) {
             Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     private void fieldTownNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldTownNameActionPerformed
-        // TODO Make this update town, update properties file if when focus lost
+        // TODO Make this update town, update properties file when focus lost
     }//GEN-LAST:event_fieldTownNameActionPerformed
 
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         try {
-            // TODO add your handling code here:
             lblStatus.setText(Checker.check(town, URL));
-            s.writeConfig();
         } catch (IOException ex) {
             Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -223,7 +220,7 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
         updateURL();
     }//GEN-LAST:event_fieldCheckingURLFocusLost
 
-    private void updateURL() {
+    private void updateURL() { //Updates the URL 
         if (fieldCheckingURL.getText().isEmpty()) {
             fieldTownName.setEnabled(false);
         } else {
@@ -240,7 +237,7 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
     }
 
     private void fieldCheckingURLKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCheckingURLKeyTyped
-        updateGrayedOut();
+        updateGrayedOut(); //If URL is empty, don't let the user put anything in the town field. Pesky little user. :P
     }//GEN-LAST:event_fieldCheckingURLKeyTyped
 
     private void updateGrayedOut() {
@@ -253,12 +250,12 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         s.closeStreams();
-        System.out.println("Window Closed");
+        System.out.println("Window Closed"); //Close streams on exit.
     }//GEN-LAST:event_formWindowClosed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         s.closeStreams();
-        System.out.println("Window Closed");
+        System.out.println("Window Closed"); //Close streams on exit.
     }//GEN-LAST:event_formWindowClosing
 
     /**

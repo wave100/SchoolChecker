@@ -20,11 +20,11 @@ import sun.audio.AudioStream;
 public class SoundPlayer {
     
     static InputStream soundInStream;
-    static AudioStream soundAudioStream;
+    static AudioStream soundAudioStream; //Figure out how to use something that NetBeans doesn't yell at me about.
     
     static final String PATH_TO_NOTIFICATION_SOUND = System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "sounds" + System.getProperty("file.separator") + "notify.wav";
     
-    public static void playNotificationSound() throws FileNotFoundException, IOException {
+    public static void playNotificationSound() throws FileNotFoundException, IOException { //Plays the BLEEZEBOOOOOOP (obnoxious sound designed to get your attention) when called.
         soundInStream = new FileInputStream(PATH_TO_NOTIFICATION_SOUND);
         soundAudioStream = new AudioStream(soundInStream);
         AudioPlayer.player.start(soundAudioStream);
