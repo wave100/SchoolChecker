@@ -17,11 +17,14 @@ import java.util.Scanner;
  */
 public class UpdateChecker {
     public static boolean checkUpdate() throws MalformedURLException, IOException {
+        System.out.println("Checking for update... ");
         return SchoolChecker.VERSION < Integer.valueOf(new Scanner(new URL("http://rishshadra.me/schoolchecker/updater/version.txt").openStream(), "UTF-8").useDelimiter("\\A").next());
     }
     
     public static void update() throws IOException {
-        Runtime.getRuntime().exec("java -jar " + System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "updater" + System.getProperty("file.separator") + "Updater.jar");
+        System.out.println("Updating program... ");
+        System.out.println("Running command: " + "java -jar " + System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "update" + System.getProperty("file.separator") + "Updater.jar");
+        Runtime.getRuntime().exec("java -jar " + System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "update" + System.getProperty("file.separator") + "Updater.jar");
         System.exit(0);
     }
 }

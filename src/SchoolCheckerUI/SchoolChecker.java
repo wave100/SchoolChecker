@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class SchoolChecker extends javax.swing.JFrame implements Runnable {
 
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
     String town = "";
     String URL = "";
     Settings s;
@@ -52,7 +52,7 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
             Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
         }
         initComponents();
-        this.setTitle("School Closings"); //Initialize window things.
+        this.setTitle("Closings-v" + VERSION); //Initialize window things.
         this.setResizable(false);
 
         if (!s.isFirstRun) { //If first run NOT detected, load old values and set program values accordingly.
@@ -291,7 +291,14 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
             java.util.logging.Logger.getLogger(SchoolChecker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        try {
+            
+            if (UpdateChecker.checkUpdate()) UpdateChecker.update();
+        
+        } catch (IOException ex) {
+            Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
