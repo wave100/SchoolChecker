@@ -49,16 +49,21 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
         this.setResizable(false);
 
         if (!s.isFirstRun) {
-            fieldTownName.setText(s.getConfigTown());
+            System.out.println("Setting program values from config");
+
             fieldCheckingURL.setText(s.getConfigURL());
+            updateURL();
+
+            fieldTownName.setText(s.getConfigTown());
+            updateTown();
         }
-        System.out.println(fieldCheckingURL.getText());
+
         if (fieldCheckingURL.getText().isEmpty()) {
             fieldTownName.setText("Town");
             fieldTownName.setEnabled(false);
             System.out.println("Graying out town field");
         }
-        
+
     }
 
     /**
@@ -81,6 +86,14 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAutoRequestFocus(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         lblStatus.setText("Town Not Set");
 
@@ -175,30 +188,22 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSetTownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetTownActionPerformed
+        updateTown();
+    }//GEN-LAST:event_btnSetTownActionPerformed
+
+    private void updateTown() {
         try {
-            // TODO add your handling code here:
             town = fieldTownName.getText();
             s.setConfigTown(fieldTownName.getText());
+            s.writeConfig();
             lblStatus.setText(Checker.check(town, URL));
-            //jButton1.setVisible(false);
-            //jTextField1.setVisible(false);
-            Thread t = new Thread(this);
+            Thread t = new Thread(this); //Stop other threads?
             t.start();
 
-            /*while(true) {
-             System.out.println("Refreshing...");
-             jLabel1.setText(Checker.check(jTextField1.getText()));
-             try {
-             Thread.sleep(60000);
-             } catch (InterruptedException ex) {
-             Logger.getLogger(SchoolCheckerUI.class.getName()).log(Level.SEVERE, null, ex);
-             }
-             }*/
         } catch (IOException ex) {
             Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_btnSetTownActionPerformed
-
+    }
 
     private void fieldTownNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldTownNameActionPerformed
         // TODO Make this update town, update properties file if when focus lost
@@ -208,13 +213,18 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
         try {
             // TODO add your handling code here:
             lblStatus.setText(Checker.check(town, URL));
+            s.writeConfig();
         } catch (IOException ex) {
             Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void fieldCheckingURLFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldCheckingURLFocusLost
-        if (fieldCheckingURL.equals(null) || fieldCheckingURL.equals("")) {
+        updateURL();
+    }//GEN-LAST:event_fieldCheckingURLFocusLost
+
+    private void updateURL() {
+        if (fieldCheckingURL.getText().isEmpty()) {
             fieldTownName.setEnabled(false);
         } else {
             fieldTownName.setEnabled(true);
@@ -222,19 +232,34 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
             s.setConfigURL(fieldCheckingURL.getText());
             try {
                 Checker.check(town, URL);
+                s.writeConfig();
             } catch (IOException ex) {
                 System.out.println("Invalid URL entered: " + URL);
             }
         }
-    }//GEN-LAST:event_fieldCheckingURLFocusLost
+    }
 
     private void fieldCheckingURLKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldCheckingURLKeyTyped
-        if (fieldCheckingURL.equals(null) || fieldCheckingURL.equals("")) {
+        updateGrayedOut();
+    }//GEN-LAST:event_fieldCheckingURLKeyTyped
+
+    private void updateGrayedOut() {
+        if (fieldCheckingURL.getText().isEmpty()) {
             fieldTownName.setEnabled(false);
         } else {
             fieldTownName.setEnabled(true);
         }
-    }//GEN-LAST:event_fieldCheckingURLKeyTyped
+    }
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        s.closeStreams();
+        System.out.println("Window Closed");
+    }//GEN-LAST:event_formWindowClosed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        s.closeStreams();
+        System.out.println("Window Closed");
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

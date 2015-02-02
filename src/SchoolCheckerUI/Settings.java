@@ -34,81 +34,60 @@ public class Settings {
     FileInputStream propertiesReader;
     PrintWriter propertiesWriter;
 
-//    public Settings() {
-//        System.out.println(SETTINGS_FILE.getAbsolutePath());
-//        if (!SETTINGS_FILE.exists()) {
-//            SETTINGS_FILE.getParentFile().mkdirs();
-//            try {
-//                SETTINGS_FILE.createNewFile();
-//            } catch (IOException ex) {
-//                Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//
-//            properties.setProperty("filler", "filler");
-//
-//            try {
-//                FileDownloader.downloadFile(System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "sounds" + System.getProperty("file.separator") + "notify.wav", new URL("http://rishshadra.me/schoolchecker/notify.wav"));
-//            } catch (IOException ex) {
-//                Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//
-//        try {
-//            propertiesReader = new BufferedReader(new FileReader(SETTINGS_FILE));
-//            propertiesWriter = new PrintWriter(SETTINGS_FILE);
-//        } catch (FileNotFoundException ex) {
-//            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//        try {
-//            properties.store(propertiesWriter, "SchoolChecker Persistence File");
-//        } catch (IOException ex) {
-//            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//        try {
-//            properties.load(propertiesReader);
-//        } catch (IOException ex) {
-//            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//
-//    }
     
     public Settings() {
         try {
             if (!SETTINGS_FILE.exists()) {
+                System.out.println("First run detected");
                 isFirstRun = true;
                 firstRun();
                 SETTINGS_FILE.getParentFile().mkdirs();
                 SETTINGS_FILE.createNewFile();
             }
-            propertiesWriter = new PrintWriter(SETTINGS_FILE);
+            
             propertiesReader = new FileInputStream(SETTINGS_FILE);
-        
+            properties.load(propertiesReader);
+            propertiesReader.close();
+            
+            propertiesWriter = new PrintWriter(SETTINGS_FILE);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        System.out.println(properties.getProperty("URL"));
+        
     }
 
-    public void writeConfig(String t, String U) throws IOException {
+    public void writeConfig() throws IOException {
+        propertiesWriter.close();
+        propertiesReader.close();
+        boolean deleted = SETTINGS_FILE.delete();
+        propertiesWriter = new PrintWriter(SETTINGS_FILE);
+        propertiesReader = new FileInputStream(SETTINGS_FILE);
+        SETTINGS_FILE.createNewFile();
         properties.store(propertiesWriter, "SchoolChecker Persistence Data");
+        System.out.println("Wrote Config (overwrite: " + deleted + ")");
     }
 
     public String getConfigURL() {
+        System.out.println(properties.getProperty("URL") + " returned from getConfigURL");
         return properties.getProperty("URL");
     }
 
     public String getConfigTown() {
+        System.out.println(properties.getProperty("town") + " returned from getConfigTown");
         return properties.getProperty("town");
     }
 
     public void setConfigURL(String U) {
+        System.out.println(U + " set as config URL");
         properties.setProperty("URL", U);
     }
 
     public void setConfigTown(String T) {
+        System.out.println(T + " set as config town");
         properties.setProperty("town", T);
     }
 
@@ -116,5 +95,17 @@ public class Settings {
         FileDownloader.downloadFile(System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "sounds" + System.getProperty("file.separator") + "notify.wav", new URL("http://rishshadra.me/schoolchecker/notify.wav"));
         properties.setProperty("URL", "");
         properties.setProperty("town", "");
+    }
+    
+    public void closeStreams() {
+        try {
+            propertiesReader.close();
+            propertiesWriter.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        System.out.println("Streams Closed");
+        
     }
 }
