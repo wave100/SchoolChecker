@@ -6,6 +6,7 @@
 package SchoolCheckerUI;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,9 +16,10 @@ import java.util.logging.Logger;
  */
 public class SchoolChecker extends javax.swing.JFrame implements Runnable {
 
+    public static final int VERSION = 1;
     String town = "";
     String URL = "";
-    Settings s = new Settings();
+    Settings s;
 
     /**
      * Creates new form SchoolCheckerUI
@@ -44,6 +46,11 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
     }
 
     public SchoolChecker() {
+        try {
+            this.s = new Settings();
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
+        }
         initComponents();
         this.setTitle("School Closings"); //Initialize window things.
         this.setResizable(false);
@@ -250,12 +257,12 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         s.closeStreams();
-        System.out.println("Window Closed"); //Close streams on exit.
+        // System.out.println("Window Closed"); //Close streams on exit.
     }//GEN-LAST:event_formWindowClosed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         s.closeStreams();
-        System.out.println("Window Closed"); //Close streams on exit.
+        // System.out.println("Window Closed"); //Close streams on exit.
     }//GEN-LAST:event_formWindowClosing
 
     /**
@@ -305,3 +312,5 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
     private javax.swing.JSeparator spr1;
     // End of variables declaration//GEN-END:variables
 }
+
+//ADD A SNOWDAYCALC PREDICTION?

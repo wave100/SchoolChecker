@@ -10,8 +10,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,9 +33,13 @@ public class Settings {
     final File SETTINGS_FILE = new File(System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "persistence.properties");
     FileInputStream propertiesReader;
     PrintWriter propertiesWriter;
+    
+    String path = SchoolChecker.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+    String pathString;
 
     
-    public Settings() {
+    public Settings() throws UnsupportedEncodingException {
+        this.pathString = URLDecoder.decode(path, "UTF-8");
         try {
             if (!SETTINGS_FILE.exists()) { //If first run, make and download all necessary files.
                 System.out.println("First run detected");
@@ -63,6 +69,8 @@ public class Settings {
         propertiesWriter = new PrintWriter(SETTINGS_FILE);
         propertiesReader = new FileInputStream(SETTINGS_FILE);
         SETTINGS_FILE.createNewFile();
+        properties.setProperty("version", String.valueOf(SchoolChecker.VERSION));
+        properties.setProperty("installpath", pathString);
         properties.store(propertiesWriter, "SchoolChecker Persistence Data");
         // System.out.println("Wrote Config (overwrite: " + deleted + ")");
     }
@@ -89,8 +97,10 @@ public class Settings {
 
     public void firstRun() throws MalformedURLException, IOException { //Downloads sound file from server and creates blank properties file entries.
         FileDownloader.downloadFile(System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "sounds" + System.getProperty("file.separator") + "notify.wav", new URL("http://rishshadra.me/schoolchecker/notify.wav"));
+        FileDownloader.downloadFile(System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "update" + System.getProperty("file.separator") + "Updater.jar", new URL("http://rishshadra.me/schoolchecker/updater/Updater.jar"));
         properties.setProperty("URL", "");
         properties.setProperty("town", "");
+        properties.setProperty("version", String.valueOf(SchoolChecker.VERSION));
     }
     
     public void closeStreams() { //Closes the in and out streams.
