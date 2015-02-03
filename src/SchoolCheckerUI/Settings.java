@@ -26,6 +26,7 @@ public class Settings {
 
     String URL;
     String town;
+    String ZIP;
     boolean isFirstRun = false;
     
     Properties properties = new Properties();
@@ -85,6 +86,10 @@ public class Settings {
         return properties.getProperty("town");
     }
 
+    public String getConfigZIP() {
+        return properties.getProperty("zip");
+    }
+    
     public void setConfigURL(String U) {
         // System.out.println(U + " set as config URL");
         properties.setProperty("URL", U);
@@ -94,7 +99,10 @@ public class Settings {
         // System.out.println(T + " set as config town");
         properties.setProperty("town", T);
     }
-
+    
+    public void setConfigZIP(String zip) {
+        properties.setProperty("zip", zip);
+    }
     public void firstRun() throws MalformedURLException, IOException { //Downloads sound file from server and creates blank properties file entries.
         FileDownloader.downloadFile(System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "sounds" + System.getProperty("file.separator") + "notify.wav", new URL("http://rishshadra.me/schoolchecker/notify.wav"));
         FileDownloader.downloadFile(System.getProperty("user.home") + System.getProperty("file.separator") + ".schoolchecker" + System.getProperty("file.separator") + "update" + System.getProperty("file.separator") + "Updater.jar", new URL("http://rishshadra.me/schoolchecker/updater/Updater.jar"));

@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import org.json.JSONException;
 
 /**
  *
@@ -16,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class SchoolChecker extends javax.swing.JFrame implements Runnable {
 
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
     String town = "";
     String URL = "";
     Settings s;
@@ -63,6 +66,14 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
 
             fieldTownName.setText(s.getConfigTown());
             updateTown();
+            
+            fieldZIPCode.setText(s.getConfigZIP());
+            
+            try {
+                updatePredictionLabel();
+            } catch (NullPointerException ex) {
+                System.out.println("No ZIP code found in config.");
+            }
         }
 
         if (fieldCheckingURL.getText().isEmpty()) {
@@ -82,14 +93,20 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        panelStatus = new javax.swing.JPanel();
         lblStatus = new javax.swing.JLabel();
+        btnRefresh = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        panelPrediction = new javax.swing.JPanel();
+        lblPrediction = new javax.swing.JLabel();
+        panelSettings = new javax.swing.JPanel();
         btnSetTown = new javax.swing.JButton();
         fieldTownName = new javax.swing.JTextField();
-        spr1 = new javax.swing.JSeparator();
-        btnRefresh = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jSeparator1 = new javax.swing.JSeparator();
         fieldCheckingURL = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        fieldZIPCode = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAutoRequestFocus(false);
@@ -103,6 +120,64 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
         });
 
         lblStatus.setText("Town Not Set");
+
+        btnRefresh.setText("Refresh");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Status:");
+
+        javax.swing.GroupLayout panelStatusLayout = new javax.swing.GroupLayout(panelStatus);
+        panelStatus.setLayout(panelStatusLayout);
+        panelStatusLayout.setHorizontalGroup(
+            panelStatusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelStatusLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelStatusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnRefresh, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panelStatusLayout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
+                        .addComponent(lblStatus)))
+                .addContainerGap())
+        );
+        panelStatusLayout.setVerticalGroup(
+            panelStatusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelStatusLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelStatusLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblStatus)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addComponent(btnRefresh)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("Current Status", panelStatus);
+
+        lblPrediction.setText("No ZIP Entered");
+
+        javax.swing.GroupLayout panelPredictionLayout = new javax.swing.GroupLayout(panelPrediction);
+        panelPrediction.setLayout(panelPredictionLayout);
+        panelPredictionLayout.setHorizontalGroup(
+            panelPredictionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelPredictionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblPrediction)
+                .addContainerGap(137, Short.MAX_VALUE))
+        );
+        panelPredictionLayout.setVerticalGroup(
+            panelPredictionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelPredictionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblPrediction)
+                .addContainerGap(81, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Prediction", panelPrediction);
 
         btnSetTown.setText("Set Town");
         btnSetTown.addActionListener(new java.awt.event.ActionListener() {
@@ -118,18 +193,6 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
             }
         });
 
-        spr1.setOrientation(javax.swing.SwingConstants.VERTICAL);
-
-        btnRefresh.setText("Refresh");
-        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRefreshActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setText("URL");
-        jLabel1.setToolTipText("The URL of your state's closings list");
-
         fieldCheckingURL.setToolTipText("");
         fieldCheckingURL.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -142,53 +205,79 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
             }
         });
 
+        jLabel1.setText("URL:");
+        jLabel1.setToolTipText("The URL of your state's closings list");
+
+        jLabel4.setText("ZIP Code:");
+
+        fieldZIPCode.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                fieldZIPCodeFocusLost(evt);
+            }
+        });
+        fieldZIPCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fieldZIPCodeActionPerformed(evt);
+            }
+        });
+        fieldZIPCode.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                fieldZIPCodeKeyTyped(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panelSettingsLayout = new javax.swing.GroupLayout(panelSettings);
+        panelSettings.setLayout(panelSettingsLayout);
+        panelSettingsLayout.setHorizontalGroup(
+            panelSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelSettingsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelSettingsLayout.createSequentialGroup()
+                        .addComponent(fieldTownName)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSetTown))
+                    .addGroup(panelSettingsLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(fieldCheckingURL))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSettingsLayout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(fieldZIPCode, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        panelSettingsLayout.setVerticalGroup(
+            panelSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelSettingsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnSetTown)
+                    .addComponent(fieldTownName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(fieldCheckingURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelSettingsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(fieldZIPCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Settings", panelSettings);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnSetTown)
-                            .addComponent(fieldTownName, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spr1, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblStatus)
-                            .addComponent(btnRefresh)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(fieldCheckingURL)))
-                .addContainerGap())
-            .addComponent(jSeparator1)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblStatus)
-                            .addComponent(fieldTownName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnSetTown)
-                            .addComponent(btnRefresh)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(spr1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(fieldCheckingURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -265,47 +354,92 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
         // System.out.println("Window Closed"); //Close streams on exit.
     }//GEN-LAST:event_formWindowClosing
 
+    private void fieldZIPCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fieldZIPCodeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fieldZIPCodeActionPerformed
+
+    private void fieldZIPCodeKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fieldZIPCodeKeyTyped
+//        try {
+//            WxDataGetter.setZIP(Integer.valueOf(fieldZIPCode.getText()));
+//        } catch (JSONException ex) {
+//            Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+    }//GEN-LAST:event_fieldZIPCodeKeyTyped
+
+    private void fieldZIPCodeFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_fieldZIPCodeFocusLost
+        try {
+            WxDataGetter.setZIP(fieldZIPCode.getText());
+        } catch (JSONException | IOException ex) {
+            Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        s.setConfigZIP(fieldZIPCode.getText());
+        
+        updatePredictionLabel();
+        
+    }//GEN-LAST:event_fieldZIPCodeFocusLost
+
+    private void updatePredictionLabel() {
+        lblPrediction.setText("Temperature: " + String.valueOf(WxDataGetter.getTemp()) + "\nPrecipitation: " + String.valueOf(WxDataGetter.getPrecip()));
+    }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+            /* Set the Nimbus look and feel */
+            //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+            /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+             * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+             */
+            try {
+                for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
                 }
+            } catch (ClassNotFoundException ex) {
+                java.util.logging.Logger.getLogger(SchoolChecker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (InstantiationException ex) {
+                java.util.logging.Logger.getLogger(SchoolChecker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                java.util.logging.Logger.getLogger(SchoolChecker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+                java.util.logging.Logger.getLogger(SchoolChecker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
+
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            //</editor-fold>
+            try {
+
+                if (UpdateChecker.checkUpdate()) {
+                    UpdateChecker.update();
+                }
+
+            } catch (IOException ex) {
+                Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            /* Create and display the form */
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    new SchoolChecker().setVisible(true);
+                }
+            });
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(SchoolChecker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(SchoolChecker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SchoolChecker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(SchoolChecker.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        try {
-            
-            if (UpdateChecker.checkUpdate()) UpdateChecker.update();
-        
-        } catch (IOException ex) {
+            Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
             Logger.getLogger(SchoolChecker.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new SchoolChecker().setVisible(true);
-            }
-        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -313,11 +447,15 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
     private javax.swing.JButton btnSetTown;
     private javax.swing.JTextField fieldCheckingURL;
     private javax.swing.JTextField fieldTownName;
+    private javax.swing.JTextField fieldZIPCode;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel lblPrediction;
     private javax.swing.JLabel lblStatus;
-    private javax.swing.JSeparator spr1;
+    private javax.swing.JPanel panelPrediction;
+    private javax.swing.JPanel panelSettings;
+    private javax.swing.JPanel panelStatus;
     // End of variables declaration//GEN-END:variables
 }
-
-//ADD A SNOWDAYCALC PREDICTION?
