@@ -72,7 +72,7 @@ public class SchoolChecker extends javax.swing.JFrame implements Runnable {
             try {
                 updatePredictionLabel();
             } catch (NullPointerException ex) {
-                System.out.println("No ZIP code found in config.");
+                // System.out.println("No ZIP code found in config.");
             }
         }
 
