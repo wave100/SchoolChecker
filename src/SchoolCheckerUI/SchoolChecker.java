@@ -19,7 +19,7 @@ import org.json.JSONException;
  */
 public class SchoolChecker extends javax.swing.JFrame implements Runnable {
 
-    public static final int VERSION = 3;
+    public static final int VERSION = 4;
     String town = "";
     String URL = "";
     Settings s;
